@@ -11,11 +11,11 @@ AR="${LLVM_PATH}/bin/llvm-ar" CC="${LLVM_PATH}/bin/clang" trunk serve --public-u
 fish shell
 ```
 set LLVM_PATH $(brew --prefix llvm)
-AR="$LLVM_PATH/bin/llvm-ar" CC="$LLVM_PATH/bin/clang" trunk serve --public-url /
+AR="$LLVM_PATH/bin/llvm-ar" CC="$LLVM_PATH/bin/clang" RUSTFLAGS=--cfg=web_sys_unstable_apis trunk serve --public-url /
 ```
 
 Build
 ```
 set LLVM_PATH $(brew --prefix llvm)
-AR="$LLVM_PATH/bin/llvm-ar" CC="$LLVM_PATH/bin/clang" trunk build --release
+AR="$LLVM_PATH/bin/llvm-ar" CC="$LLVM_PATH/bin/clang" RUSTFLAGS=--cfg=web_sys_unstable_apis trunk build --release
 ```

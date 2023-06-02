@@ -15,7 +15,8 @@ use nostr::{
 use serde::{de::Error, Deserialize, Serialize};
 use serde_json::Value;
 use url::Url;
-use wasm_bindgen_futures::spawn_local;
+use wasm_bindgen_futures::{spawn_local, JsFuture};
+use web_sys::{console::error, window};
 
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)]
@@ -315,7 +316,7 @@ impl eframe::App for NwcApp {
                     });
 
 
-                        for transaction in &self.history {
+                     for transaction in &self.history {
                             ui.separator();
                             ui.label(transaction);
                         }
