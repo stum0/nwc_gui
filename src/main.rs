@@ -1,4 +1,5 @@
 #![warn(clippy::all, rust_2018_idioms)]
+use log::Level;
 
 // when compiling to web using trunk.
 #[cfg(target_arch = "wasm32")]
@@ -8,6 +9,7 @@ fn main() {
 
     // Redirect tracing to console.log and friends:
     tracing_wasm::set_as_global_default();
+    console_log::init_with_level(Level::Info).expect("error initializing log");
 
     let web_options = eframe::WebOptions::default();
 
