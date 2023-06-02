@@ -1,4 +1,4 @@
-use std::str::FromStr;
+use std::{str::FromStr, time::Duration};
 
 use chrono::Local;
 use egui::TextEdit;
@@ -11,19 +11,16 @@ pub struct NwcApp {
     wallet_connected: bool,
     ln_address: String,
     ln_amount: String,
-    sent: bool,
     history: Vec<String>,
 }
 
 impl Default for NwcApp {
     fn default() -> Self {
-        let str = "";
         Self {
             uri: "".to_owned(),
             wallet_connected: false,
             ln_address: "".to_owned(),
             ln_amount: "".to_owned(),
-            sent: false,
             history: Vec::new(),
         }
     }
@@ -40,11 +37,14 @@ impl NwcApp {
 }
 
 impl eframe::App for NwcApp {
-    // fn save(&mut self, storage: &mut dyn eframe::Storage) {
-    //     eframe::set_value(storage, eframe::APP_KEY, self);
-    // }
+    fn save(&mut self, storage: &mut dyn eframe::Storage) {
+        eframe::set_value(storage, eframe::APP_KEY, self);
+    }
+    fn auto_save_interval(&self) -> Duration {
+        Duration::from_secs(1)
+    }
 
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+    fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
         if !self.wallet_connected {
             egui::Window::new("NWC")
                 .resizable(false)
@@ -102,7 +102,6 @@ impl eframe::App for NwcApp {
                                     self.ln_address, self.ln_amount, formatted_time
                                 );
                                 self.history.push(sent);
-                                self.sent = true;
                                 self.ln_amount = "".to_owned();
                                 self.ln_address = "".to_owned();
                             }
@@ -123,6 +122,7 @@ impl eframe::App for NwcApp {
                             self.ln_address = "".to_owned();
                             self.ln_amount = "".to_owned();
                             self.uri = "".to_owned();
+                            self.history.clear();
                         }
                     });
                 });
