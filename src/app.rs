@@ -1,9 +1,12 @@
+use std::str::FromStr;
+
 use chrono::Local;
 use egui::TextEdit;
+use email_address::EmailAddress;
 
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)]
-pub struct TemplateApp {
+pub struct NwcApp {
     uri: String,
     wallet_connected: bool,
     ln_address: String,
@@ -12,8 +15,9 @@ pub struct TemplateApp {
     history: Vec<String>,
 }
 
-impl Default for TemplateApp {
+impl Default for NwcApp {
     fn default() -> Self {
+        let str = "";
         Self {
             uri: "".to_owned(),
             wallet_connected: false,
@@ -25,7 +29,7 @@ impl Default for TemplateApp {
     }
 }
 
-impl TemplateApp {
+impl NwcApp {
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
         if let Some(storage) = cc.storage {
             return eframe::get_value(storage, eframe::APP_KEY).unwrap_or_default();
@@ -35,7 +39,7 @@ impl TemplateApp {
     }
 }
 
-impl eframe::App for TemplateApp {
+impl eframe::App for NwcApp {
     // fn save(&mut self, storage: &mut dyn eframe::Storage) {
     //     eframe::set_value(storage, eframe::APP_KEY, self);
     // }
@@ -84,20 +88,24 @@ impl eframe::App for TemplateApp {
                                 .id(egui::Id::new("ln_amount"))
                                 .desired_width(150.0),
                         );
+
                         if ui.small_button("send").clicked()
                             && !self.ln_address.is_empty()
                             && self.ln_amount.parse::<i32>().unwrap_or(0) > 0
                         {
-                            let time = Local::now();
-                            let formatted_time = time.format("%H:%M %d-%m-%Y");
-                            let sent = format!(
-                                "{} | {} sats | {}",
-                                self.ln_address, self.ln_amount, formatted_time
-                            );
-                            self.history.push(sent);
-                            self.sent = true;
-                            self.ln_amount = "".to_owned();
-                            self.ln_address = "".to_owned();
+                            if let Ok(ln_address) = LightningAddress::new(&self.ln_address) {
+                                self.ln_address = ln_address.value.to_string();
+                                let time = Local::now();
+                                let formatted_time = time.format("%H:%M %d-%m-%Y");
+                                let sent = format!(
+                                    "{} | {} sats | {}",
+                                    self.ln_address, self.ln_amount, formatted_time
+                                );
+                                self.history.push(sent);
+                                self.sent = true;
+                                self.ln_amount = "".to_owned();
+                                self.ln_address = "".to_owned();
+                            }
                         }
                     });
 
@@ -119,5 +127,27 @@ impl eframe::App for TemplateApp {
                     });
                 });
         }
+    }
+}
+
+#[derive(Debug, PartialEq, Clone, Eq, Hash)]
+pub struct LightningAddress {
+    value: EmailAddress,
+}
+
+impl LightningAddress {
+    pub fn new(value: &str) -> Result<Self, String> {
+        EmailAddress::from_str(value)
+            .map(|value| LightningAddress { value })
+            .map_err(|_| "Invalid email address".into())
+    }
+
+    #[inline]
+    pub fn lnurlp_url(&self) -> String {
+        format!(
+            "https://{}/.well-known/lnurlp/{}",
+            self.value.domain(),
+            self.value.local_part()
+        )
     }
 }

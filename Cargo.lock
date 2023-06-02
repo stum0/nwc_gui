@@ -794,6 +794,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "email_address"
+version = "0.2.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e2153bd83ebc09db15bcbdc3e2194d901804952e3dc96967e1cd3b0c5c32d112"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "emath"
 version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1488,6 +1497,7 @@ dependencies = [
  "console_error_panic_hook",
  "eframe",
  "egui",
+ "email_address",
  "serde",
  "tracing-wasm",
  "wasm-bindgen-futures",

@@ -15,7 +15,7 @@ fn main() {
         eframe::start_web(
             "NWC", // hardcode it
             web_options,
-            Box::new(|cc| Box::new(nwc_gui::TemplateApp::new(cc))),
+            Box::new(|cc| Box::new(nwc_gui::NwcApp::new(cc))),
         )
         .await
         .expect("failed to start eframe");

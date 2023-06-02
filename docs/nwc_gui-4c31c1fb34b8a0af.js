@@ -1283,16 +1283,16 @@ function getImports() {
         const ret = getObject(arg0).pageY;
         return ret;
     };
-    imports.wbg.__wbindgen_closure_wrapper1301 = function(arg0, arg1, arg2) {
+    imports.wbg.__wbindgen_closure_wrapper1304 = function(arg0, arg1, arg2) {
         const ret = makeMutClosure(arg0, arg1, 157, __wbg_adapter_24);
         return addHeapObject(ret);
     };
-    imports.wbg.__wbindgen_closure_wrapper1303 = function(arg0, arg1, arg2) {
+    imports.wbg.__wbindgen_closure_wrapper1306 = function(arg0, arg1, arg2) {
         const ret = makeMutClosure(arg0, arg1, 157, __wbg_adapter_27);
         return addHeapObject(ret);
     };
-    imports.wbg.__wbindgen_closure_wrapper5712 = function(arg0, arg1, arg2) {
-        const ret = makeMutClosure(arg0, arg1, 679, __wbg_adapter_30);
+    imports.wbg.__wbindgen_closure_wrapper5740 = function(arg0, arg1, arg2) {
+        const ret = makeMutClosure(arg0, arg1, 682, __wbg_adapter_30);
         return addHeapObject(ret);
     };
 
@@ -1330,7 +1330,7 @@ function initSync(module) {
 
 async function init(input) {
     if (typeof input === 'undefined') {
-        input = new URL('nwc_gui-edc0481c5f193bec_bg.wasm', import.meta.url);
+        input = new URL('nwc_gui-4c31c1fb34b8a0af_bg.wasm', import.meta.url);
     }
     const imports = getImports();
 
