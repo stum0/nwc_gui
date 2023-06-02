@@ -44,8 +44,8 @@ impl eframe::App for TemplateApp {
                 .collapsible(false)
                 .anchor(egui::Align2::CENTER_CENTER, egui::Vec2::ZERO)
                 .show(ctx, |ui| {
-                    ui.separator();
                     ui.label("Enter Your Nostr Wallet Connect URI:");
+                    ui.separator();
                     ui.add(
                         TextEdit::multiline(&mut self.uri)
                             .hint_text("nostrwalletconnect://")
@@ -91,10 +91,12 @@ impl eframe::App for TemplateApp {
 
                     ui.separator();
                     ui.add_space(50.0);
-
-                    if ui.small_button("Log Out").clicked() && !self.uri.is_empty() {
-                        self.wallet_connected = false;
-                    }
+                    ui.horizontal(|ui| {
+                        ui.add_space(300.0);
+                        if ui.small_button("Log Out").clicked() && !self.uri.is_empty() {
+                            self.wallet_connected = false;
+                        }
+                    });
                 });
         } else if self.wallet_connected && self.sent {
             egui::Window::new("Payment Details")
