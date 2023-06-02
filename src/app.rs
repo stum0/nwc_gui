@@ -1,3 +1,4 @@
+use chrono::Local;
 use egui::TextEdit;
 
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -8,6 +9,7 @@ pub struct TemplateApp {
     ln_address: String,
     ln_amount: String,
     sent: bool,
+    history: Vec<String>,
 }
 
 impl Default for TemplateApp {
@@ -18,6 +20,7 @@ impl Default for TemplateApp {
             ln_address: "".to_owned(),
             ln_amount: "".to_owned(),
             sent: false,
+            history: Vec::new(),
         }
     }
 }
@@ -38,7 +41,7 @@ impl eframe::App for TemplateApp {
     // }
 
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        if !self.wallet_connected && !self.sent {
+        if !self.wallet_connected {
             egui::Window::new("NWC")
                 .resizable(false)
                 .collapsible(false)
@@ -57,7 +60,7 @@ impl eframe::App for TemplateApp {
                         self.wallet_connected = true;
                     }
                 });
-        } else if self.wallet_connected && !self.sent {
+        } else if self.wallet_connected {
             egui::Window::new("NWC")
                 .resizable(false)
                 .collapsible(false)
@@ -85,9 +88,23 @@ impl eframe::App for TemplateApp {
                             && !self.ln_address.is_empty()
                             && self.ln_amount.parse::<i32>().unwrap_or(0) > 0
                         {
+                            let time = Local::now();
+                            let formatted_time = time.format("%H:%M %d-%m-%Y");
+                            let sent = format!(
+                                "{} | {} sats | {}",
+                                self.ln_address, self.ln_amount, formatted_time
+                            );
+                            self.history.push(sent);
                             self.sent = true;
+                            self.ln_amount = "".to_owned();
+                            self.ln_address = "".to_owned();
                         }
                     });
+
+                    for transaction in &self.history {
+                        ui.separator();
+                        ui.label(transaction);
+                    }
 
                     ui.separator();
                     ui.add_space(50.0);
@@ -95,25 +112,11 @@ impl eframe::App for TemplateApp {
                         ui.add_space(300.0);
                         if ui.small_button("Log Out").clicked() && !self.uri.is_empty() {
                             self.wallet_connected = false;
+                            self.ln_address = "".to_owned();
+                            self.ln_amount = "".to_owned();
+                            self.uri = "".to_owned();
                         }
                     });
-                });
-        } else if self.wallet_connected && self.sent {
-            egui::Window::new("Payment Details")
-                .resizable(false)
-                .collapsible(false)
-                .anchor(egui::Align2::CENTER_CENTER, egui::Vec2::ZERO)
-                .show(ctx, |ui| {
-                    let payment_sent =
-                        format!("{} sats sent to {}", self.ln_amount, self.ln_address);
-                    ui.label(payment_sent);
-                    ui.separator();
-                    let preimage = "preimage";
-                    ui.label(preimage);
-                    ui.separator();
-                    if ui.small_button("back").clicked() && !self.uri.is_empty() {
-                        self.sent = false;
-                    }
                 });
         }
     }
