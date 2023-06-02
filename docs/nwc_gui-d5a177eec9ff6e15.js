@@ -1330,7 +1330,7 @@ function initSync(module) {
 
 async function init(input) {
     if (typeof input === 'undefined') {
-        input = new URL('nwc_gui-667bad0d0680a386_bg.wasm', import.meta.url);
+        input = new URL('nwc_gui-d5a177eec9ff6e15_bg.wasm', import.meta.url);
     }
     const imports = getImports();
 

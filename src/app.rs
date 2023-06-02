@@ -41,7 +41,7 @@ impl eframe::App for NwcApp {
         eframe::set_value(storage, eframe::APP_KEY, self);
     }
     fn auto_save_interval(&self) -> Duration {
-        Duration::from_secs(1)
+        Duration::from_millis(5)
     }
 
     fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
