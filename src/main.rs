@@ -122,9 +122,9 @@ fn nwc(mut contexts: EguiContexts, mut nwc: ResMut<NwcApp>) {
                                 nwc.ln_address, nwc.ln_amount, formatted_time
                             );
                             nwc.history.push(sent);
-                            //let uri = Url::parse(&nwc.uri).expect("Failed to parse URL");
+                            let uri = Url::parse(&nwc.uri).expect("Failed to parse URL");
 
-                            let uri = Url::parse("nostrwalletconnect://69effe7b49a6dd5cf525bd0905917a5005ffe480b58eeb8e861418cf3ae760d9?relay=wss://relay.getalby.com/v1&secret=15bd7b3f7d7d961a218f0ad2706b93d1d0789ea16d2d168a5b35171807d35ae8&lud16=stu@getalby.com").expect("Failed to parse URL");
+                            // let uri = Url::parse("").expect("Failed to parse URL");
 
                             let relay = uri
                                 .query_pairs()
@@ -242,11 +242,11 @@ fn nwc(mut contexts: EguiContexts, mut nwc: ResMut<NwcApp>) {
                                     sig: nwc_key_pair.sign_schnorr(sig),
                                 };
 
-                                // let nwc_pay = ClientMessage::new_event(pay_event);
-                                // write
-                                //     .send(WsMessage::Text(nwc_pay.as_json()))
-                                //     .await
-                                //     .unwrap();
+                                let nwc_pay = ClientMessage::new_event(pay_event);
+                                write
+                                    .send(WsMessage::Text(nwc_pay.as_json()))
+                                    .await
+                                    .unwrap();
 
                                 while let Some(web_msg) = read.next().await {
                                     match web_msg {
@@ -315,22 +315,21 @@ fn nwc(mut contexts: EguiContexts, mut nwc: ResMut<NwcApp>) {
                 });
 
                 let area = egui::containers::Area::new("transaction_history")
-                .order(Order::Foreground)
-                .anchor(egui::Align2::CENTER_CENTER, egui::Vec2::new(0.0, 15.0));
+                    .order(Order::Foreground)
+                    .anchor(egui::Align2::CENTER_CENTER, egui::Vec2::new(0.0, 15.0));
 
                 area.show(ui.ctx(), |ui| {
-                egui::ScrollArea::vertical()
-                .max_height(50.0)
-                .max_width(300.0)
-                .stick_to_bottom(true)
-                .show(ui, |ui| {
-                for transaction in &nwc.history {
-                    ui.separator();
-                    ui.label(transaction);
-                }
-            });
-        });
-
+                    egui::ScrollArea::vertical()
+                        .max_height(50.0)
+                        .max_width(300.0)
+                        .stick_to_bottom(true)
+                        .show(ui, |ui| {
+                            for transaction in &nwc.history {
+                                ui.separator();
+                                ui.label(transaction);
+                            }
+                        });
+                });
 
                 ui.separator();
                 ui.add_space(100.0);
