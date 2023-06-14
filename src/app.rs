@@ -1,7 +1,7 @@
 use std::{str::FromStr, time::Duration};
 
 use chrono::Local;
-use egui::TextEdit;
+use egui::{Order, TextEdit};
 use email_address::EmailAddress;
 use futures::{SinkExt, StreamExt};
 use gloo_net::websocket::{futures::WebSocket, Message as WsMessage, WebSocketError};
@@ -15,8 +15,7 @@ use nostr::{
 use serde::{de::Error, Deserialize, Serialize};
 use serde_json::Value;
 use url::Url;
-use wasm_bindgen_futures::{spawn_local, JsFuture};
-use web_sys::{console::error, window};
+use wasm_bindgen_futures::spawn_local;
 
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)]
@@ -316,18 +315,33 @@ impl eframe::App for NwcApp {
                     });
 
 
-                     for transaction in &self.history {
-                            ui.separator();
-                            ui.label(transaction);
-                        }
+
+                let area = egui::containers::Area::new("transaction_history")
+                    .order(Order::Foreground)
+                    .anchor(egui::Align2::CENTER_CENTER, egui::Vec2::new(0.0, 15.0));
+
+                area.show(ui.ctx(), |ui| {
+                    egui::ScrollArea::vertical()
+                        .max_height(50.0)
+                        .max_width(300.0)
+                        .stick_to_bottom(true)
+                        .show(ui, |ui| {
+                            for transaction in &self.history {
+                                ui.separator();
+                                ui.label(transaction);
+                            }
+                        });
+                });
 
 
 
-                    ui.separator();
-                    ui.add_space(50.0);
-                    ui.horizontal(|ui| {
-                        ui.add_space(300.0);
-                        if ui.small_button("Log Out").clicked() && !self.uri.is_empty() {
+
+
+                ui.separator();
+                ui.add_space(100.0);
+                ui.horizontal(|ui| {
+                ui.add_space(300.0);
+                    if ui.small_button("Log Out").clicked() && !self.uri.is_empty() {
                             self.wallet_connected = false;
                             self.ln_address = "".to_owned();
                             self.ln_amount = "".to_owned();
